@@ -1,15 +1,12 @@
 class <%= migration_class_name %> < ActiveRecord::Migration
-  def self.up
-    change_table :<%= table_name %> do |t|
-<% attachment_names.each do |attachment| -%>
-      t.attachment :<%= attachment %>
-<% end -%>
-    end
+  def change
+      
+    add_column <%= table_name %>, :file_name, :string
+    add_column <%= table_name %>, :file_size, :integer
+    add_column <%= table_name %>, :file_status, :string, :default => "new"
+    add_column <%= table_name %>, :content_type, :string
+    
   end
 
-  def self.down
-<% attachment_names.each do |attachment| -%>
-    remove_attachment :<%= table_name %>, :<%= attachment %>
-<% end -%>
-  end
+  
 end
