@@ -79,8 +79,11 @@ module Fclay
     end
 
     def local_file_url(style=nil)
-       url = "http://#{ENV["crm_assets_domain"]}"
-       url += ":3000" if Rails.env.development?
+       if Rails.env.development?
+         url = Fclay.configuration.local_storage_development_assets_host
+       else
+         url = Fclay.configuration.local_storage_production_assets_host
+       end
        url += "#{LOCAL_URL}/#{self.class.name.tableize}"
        url += "/#{style.to_s}" if style && style != :nil 
        url += "/#{file_name}"
@@ -133,7 +136,7 @@ module Fclay
   
       unless ext
         filename_part = @file.original_filename.split(".")
-        ext = ".#{filename_part.last}" if filename_part.size > 1
+        ext = "#{filename_part.last}" if filename_part.size > 1
       end
   
   
@@ -141,7 +144,7 @@ module Fclay
    
       file_name = try(:generate_filename)
       file_name = SecureRandom.hex unless file_name
-      self.file_name = file_name + ext
+      self.file_name = "#{file_name}.#{ext}"
    
      FileUtils.mv(@file.try(:path) || @file[:path],local_file_path)
      `chmod 0755 #{local_file_path}`
