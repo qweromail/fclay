@@ -6,3 +6,6 @@ module Fclay
 
 
 end
+
+
+require "fclay/attachment"
