@@ -2,6 +2,8 @@ require "fclay/version"
 
 module Fclay
 
+  require 'fclay/engine' if defined?(Rails)
+
   LOCAL_URL = "/system/local_storage"
   LOCAL_FOLDER = "/public#{LOCAL_URL}"
   
