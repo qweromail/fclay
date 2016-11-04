@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
-  # spec.files = [".gitignore", ".rspec", ".travis.yml", "Gemfile", "LICENSE.txt", "README.md", "Rakefile", "bin/console", "bin/setup", "fclay.gemspec", "lib/fclay.rb", "lib/fclay/attachment.rb", "lib/fclay/version.rb", "lib/generators/fclay/fclay_generator.rb", "lib/generators/fclay/templates/fclay_migration.rb.erb"]
+
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
