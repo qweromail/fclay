@@ -5,8 +5,8 @@ class FclayGenerator < ActiveRecord::Generators::Base
        "The NAME argument is the name of your model, and the following " +
        "arguments are the name of the attachments"
 
-  argument :attachment_names, :required => true, :type => :array, :desc => "The names of the attachment(s) to add.",
-           :banner => "attachment_one attachment_two attachment_three ..."
+  # argument :attachment_names, :required => true, :desc => "The names of the attachment(s) to add.",
+ #           :banner => "attachment_one attachment_two attachment_three ..."
 
   def self.source_root
     @source_root ||= File.expand_path('../templates', __FILE__)
@@ -17,7 +17,7 @@ class FclayGenerator < ActiveRecord::Generators::Base
   end
 
   def migration_name
-    "add_fclay_attachment_#{attachment_names.join("_")}_to_#{name.underscore.pluralize}"
+    "add_fclay_fields_#{attachment_names.join("_")}_to_#{name.underscore.pluralize}"
   end
 
   def migration_file_name
