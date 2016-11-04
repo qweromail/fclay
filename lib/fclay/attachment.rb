@@ -1,7 +1,4 @@
-module Fclay
-  
-  A = "1"
-  
+module Fclay  
   module Attachment
 
     LOCAL_URL = "/system/local_storage"
