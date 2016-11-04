@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 module Fclay
 
-  module FileProcessor
+  module Attachment
   
     LOCAL_URL = "/system/local_storage"
     LOCAL_FOLDER = "/public#{LOCAL_URL}"
