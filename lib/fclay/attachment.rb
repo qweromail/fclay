@@ -167,22 +167,16 @@ module Fclay
 
     end  
 
-    def delete_remote_files       
+    def delete_remote_files
       self.class.name.constantize::STYLES.each do |style|
-        delete_remote_file remote_file_path(style)
+        Fclay::Attachment.bucket_object.object(remote_file_path(style)).delete
       end
     end
     
-    def self.delete_remote_file path
-      bucket_object.object(path).delete
-    end
-
     def set_file_size style=:nil
-  
       self.file_size = File.size local_file_path(style)
-        
     end
-
+    
     def self.resolve_file_url navigation_complex_id,type,file_name,style=nil
   
       return "" if file_name.nil? || type.nil?
