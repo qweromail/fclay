@@ -6,15 +6,15 @@ module Fclay
 
     attr_accessor :file
   
-    def self.delete_files files
-
-      files = [files] unless files.class == Array
-  
-      files.each do |f|
-        FileUtils.rm f
+    def delete_files
+    
+      case file_status 
+        when 'in_remote_storage'
+          delete_remote_files
+        when 'in_local_storage'
+          delete_local_files
       end
-  
-
+    
     end
 
     def self.upload type,id
@@ -166,6 +166,16 @@ module Fclay
        end
 
     end  
+
+    def delete_remote_files       
+      self.class.name.constantize::STYLES.each do |style|
+        delete_remote_file remote_file_path(style)
+      end
+    end
+    
+    def self.delete_remote_file path
+      bucket_object.object(path).delete
+    end
 
     def set_file_size style=:nil
   
