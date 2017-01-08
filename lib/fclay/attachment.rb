@@ -1,13 +1,32 @@
 module Fclay  
   module Attachment
 
-    LOCAL_URL = "/system/local_storage"
-    LOCAL_FOLDER = "/public#{LOCAL_URL}"
+    extend ActiveSupport::Concern
+    
+    CALLBACKS = [:process,:upload,:delete]
+    
+    
+    included do 
+      
+      callbacks = CALLBACKS
+     
+      case fclay_options[:without].class.name
+        when "Symbol"
+          callbacks.clear if fclay_options[:without] == :all
+        when "Array"
+          callbacks -= fclay_options[:without]
+      end 
+      
+      before_create :process_file if callbacks.include? :process
+      after_create :upload_later if callbacks.include? :upload
+      before_destroy :delete_files if callbacks.include? :delete
+    
+    end
 
     attr_accessor :file
-  
-    def delete_files
     
+    def delete_files
+      
       case file_status 
         when 'in_remote_storage'
           delete_remote_files
@@ -16,7 +35,15 @@ module Fclay
       end
     
     end
-
+    
+    def upload_later
+      Fclay::UploadJob.perform_later self.class.name,self.id
+    end
+    
+    def upload
+      Fclay::Attachment.upload self.class.name,self.id
+    end
+    
     def self.upload type,id
 
        type = type.constantize
@@ -29,7 +56,7 @@ module Fclay
        obj.put({
          body: File.read(uploading_object.local_file_path),
          acl: "public-read",
-         content_type: uploading_object.content_type
+         content_type: uploading_object.class.fclay_options[:content_type]
        })
       
        if uploading_object.update_attribute(:file_status, 'in_remote_storage')
@@ -69,7 +96,7 @@ module Fclay
     end
 
     def remote_file_url(style=nil)
-      "http://#{ENV['crm_s3_bucket']}.s3.amazonaws.com/#{remote_file_path(style)}"
+      "http://#{Fclay::RemoteStorage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
     end
 
     def local_file_path(style=nil)
@@ -84,7 +111,7 @@ module Fclay
        else
          url = Fclay.configuration.local_storage_production_assets_host
        end
-       url += "#{LOCAL_URL}/#{self.class.name.tableize}"
+       url += "#{Fclay.configuration.local_url}/#{self.class.name.tableize}"
        url += "/#{style.to_s}" if style && style != :nil 
        url += "/#{file_name}"
        url
@@ -95,7 +122,7 @@ module Fclay
     end
 
     def local_file_dir(style=nil) 
-     dir = "#{Rails.root.to_s + LOCAL_FOLDER}/#{self.class.name.tableize}"
+     dir = "#{Rails.root.to_s + Fclay.configuration.local_folder}/#{self.class.name.tableize}"
      dir += "/#{style.to_s}" if style && style != :nil     
      dir
     end
@@ -114,7 +141,7 @@ module Fclay
 
     def create_dirs
 
-     (self.class.name.constantize.try(:styles) || [nil]).each do |style|
+     (self.class.fclay_options[:styles] || [nil]).each do |style|
        FileUtils.mkdir_p(local_file_dir(style))
      end
 
@@ -146,7 +173,7 @@ module Fclay
     
     def fetch_file_name
       
-      ext = self.class.name.constantize.try(:extension)
+      ext = self.class.fclay_options[:extension]
       if !ext && @file.original_filename
         filename_part = @file.original_filename.split(".")
         ext = "#{filename_part.last}" if filename_part.size > 1
@@ -169,7 +196,8 @@ module Fclay
     end  
 
     def delete_remote_files
-      self.class.name.constantize::STYLES.each do |style|
+      
+      (self.class.fclay_options[:styles] || [nil]).each do |style|
         Fclay::Attachment.bucket_object.object(remote_file_path(style)).delete
       end
     end
@@ -182,7 +210,7 @@ module Fclay
   
       return "" if file_name.nil? || type.nil?
   
-      path = "http://s3.amazonaws.com/#{BUCKET_NAME}"
+      path = "http://s3.amazonaws.com/#{Fclay::RemoteStorage.bucket_name}"
       path += "/navigation_complex/#{navigation_complex_id}" if navigation_complex_id
       path += "/#{type}"
       path += "/#{style.to_s}" if style
@@ -192,7 +220,7 @@ module Fclay
 
     def self.bucket_object
       s3 = Aws::S3::Resource.new
-      s3.bucket(ENV['crm_s3_bucket'])
+      s3.bucket(Fclay::RemoteStorage.bucket_name)
     end
 
   end
