@@ -22,8 +22,9 @@ Or install it yourself as:
 
 ## Usage
 
-$ rails g fclay User
+Create migration for model:
 
+    $ rails g fclay User
 
 ```ruby
 class User < ActiveRecord::Base
