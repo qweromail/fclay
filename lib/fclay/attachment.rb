@@ -123,38 +123,39 @@ module Fclay
     def process_file
   
       return unless @file
-  
-      if self.file_status == 'in_remote_storage'
-        self.class.name.constantize::STYLES.each do |style|
-           S3.delay(:queue => "backend").delete_s3_file s3_file_path(style)
-        end
-        self.file_status = 'new'
-      end
-  
+
+      # TODO: refactor this
+      # if self.file_status == 'in_remote_storage'
+#         self.class.name.constantize::STYLES.each do |style|
+#            S3.delay(:queue => "backend").delete_s3_file s3_file_path(style)
+#         end
+#         self.file_status = 'new'
+#       end
+
       create_dirs
+      fetch_file_name unless self.file_name.present?
+
+      FileUtils.mv(@file.try(:path) || @file[:path],local_file_path)
+      `chmod 0755 #{local_file_path}`
+
+      delete_tmp_file
+      set_file_size
+      self.file_status = 'in_local_storage'
+ 
+    end
+    
+    def fetch_file_name
+      
       ext = self.class.name.constantize.try(:extension)
-  
-      unless ext
+      if !ext && @file.original_filename
         filename_part = @file.original_filename.split(".")
         ext = "#{filename_part.last}" if filename_part.size > 1
       end
-  
-  
-  
-   
-      file_name = try(:generate_filename)
-      file_name = SecureRandom.hex unless file_name
-      self.file_name = "#{file_name}.#{ext}"
-   
-     FileUtils.mv(@file.try(:path) || @file[:path],local_file_path)
-     `chmod 0755 #{local_file_path}`
 
-     delete_tmp_file
-     set_file_size
-     self.file_status = 'in_local_storage'
- 
-   
-  
+      self.file_name = try(:generate_filename)
+      self.file_name = SecureRandom.hex unless file_name
+      self.file_name += ".#{ext}" if ext
+      
     end
 
     def delete_local_files 
