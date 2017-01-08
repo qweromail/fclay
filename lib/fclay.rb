@@ -1,5 +1,6 @@
 require "fclay/version"
 require 'fclay/configuration'
+require 'fclay/upload_job'
 
 
 module Fclay
