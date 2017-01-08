@@ -120,13 +120,14 @@ module Fclay
 
     def local_file_dir(style=nil) 
      dir = "#{Rails.root.to_s + Fclay.configuration.local_folder}/#{self.class.name.tableize}"
-     dir += "/#{style.to_s}" if style && style != :nil     
+     dir += "/#{style.to_s}" if style   
      dir
     end
 
     def remote_file_path(style=nil)
       path = ""
       path += "#{self.class.name.tableize}"
+      path += "/#{style.to_s}" if style
       path += "/#{file_name}"
       path    
     end
