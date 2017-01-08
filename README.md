@@ -22,7 +22,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+$ rails g fclay User
+
+
+```ruby
+class User < ActiveRecord::Base
+  has_fclay_attachment without: [:process, :upload, :delete], content_type: "application/json", extension: 'png', styles: [:thumb,:original]
+end
+```
+
 
 ## Development
 
