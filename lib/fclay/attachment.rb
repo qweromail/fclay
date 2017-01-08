@@ -66,11 +66,8 @@ module Fclay
 
     end
 
-    def check_file
-
-     errors.add(:file, 'must be present') if id.blank? && @file.blank?
-     self.content_type = @file.content_type
- 
+    def fclay_attachment_presence
+     errors.add(:file, 'must be present') if id.blank? && !@file
     end
 
     def file_size_mb 
