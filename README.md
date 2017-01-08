@@ -26,11 +26,39 @@ Create migration for model:
 
     $ rails g fclay User
 
+Add `has_fclay_attachment` to model file:
+
 ```ruby
 class User < ActiveRecord::Base
   has_fclay_attachment without: [:process, :upload, :delete], content_type: "application/json", extension: 'png', styles: [:thumb,:original]
 end
 ```
+
+Now `User` model has `file_url` method
+
+```ruby
+  User.last.file_url
+```
+
+## Configuration
+
+Configuring with `config\initializers\fclay.rb`:
+
+```ruby
+  
+  require 'fclay'
+  Fclay.configure do |config|
+    config.local_storage_production_assets_host = "http://mysite.com"
+    config.storage_mode = "s3"
+    config.remote_storages = {
+      "s3" => {
+        kind: 'aws',
+        bucket: "bucket_name",
+      }
+    }
+  end
+```
+
 
 
 ## Development
