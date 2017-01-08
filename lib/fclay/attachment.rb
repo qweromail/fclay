@@ -51,13 +51,15 @@ module Fclay
        return if uploading_object.file_status == "in_remote_storage"
        content_type  = uploading_object.try(:content_type)
        bucket = bucket_object
-   
-       obj = bucket.object(uploading_object.remote_file_path)
-       obj.put({
-         body: File.read(uploading_object.local_file_path),
-         acl: "public-read",
-         content_type: uploading_object.class.fclay_options[:content_type]
-       })
+       
+       (self.class.fclay_options[:styles] || [nil]).each do |style|
+         obj = bucket.object(uploading_object.remote_file_path(style))
+         obj.put({
+           body: File.read(uploading_object.local_file_path(style)),
+           acl: "public-read",
+           content_type: uploading_object.class.fclay_options[:content_type]
+         })
+       end
       
        if uploading_object.update_attribute(:file_status, 'in_remote_storage')
          uploading_object.delete_local_files
@@ -186,7 +188,9 @@ module Fclay
     def delete_local_files 
 
        begin
-          FileUtils.rm(local_file_path,{:force => true})
+          (self.class.fclay_options[:styles] || [nil]).each do |style|
+            FileUtils.rm(local_file_path(style),{:force => true})
+          end
        rescue
           Rails.logger.info "Deleting Media #{id} sync file not found"
        end
