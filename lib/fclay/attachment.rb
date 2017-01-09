@@ -105,15 +105,11 @@ module Fclay
     end
 
     def local_file_url(style=nil)
-       if Rails.env.development?
-         url = Fclay.configuration.local_storage_development_assets_host
-       else
-         url = Fclay.configuration.local_storage_production_assets_host
-       end
-       url += "#{Fclay.configuration.local_url}/#{self.class.name.tableize}"
-       url += "/#{style.to_s}" if style
-       url += "/#{file_name}"
-       url
+      url = Fclay.configuration.local_storage_assets_host 
+      url += "#{Fclay.configuration.local_url}/#{self.class.name.tableize}"
+      url += "/#{style.to_s}" if style
+      url += "/#{file_name}"
+      url
     end
 
     def short_local_file_url(style=nil)

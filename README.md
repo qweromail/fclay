@@ -48,7 +48,7 @@ Configuring with `config\initializers\fclay.rb`:
   
   require 'fclay'
   Fclay.configure do |config|
-    config.local_storage_production_assets_host = "http://mysite.com"
+    config.local_storage_assets_host = "http://mysite.com"
     config.storage_mode = "s3"
     config.remote_storages = {
       "s3" => {
