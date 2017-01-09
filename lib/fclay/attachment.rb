@@ -52,7 +52,7 @@ module Fclay
        content_type  = uploading_object.try(:content_type)
        bucket = bucket_object
        
-       (self.class.fclay_options[:styles] || [nil]).each do |style|
+       (uploading_object.class.fclay_options[:styles] || [nil]).each do |style|
          obj = bucket.object(uploading_object.remote_file_path(style))
          obj.put({
            body: File.read(uploading_object.local_file_path(style)),
