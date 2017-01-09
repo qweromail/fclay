@@ -111,7 +111,7 @@ module Fclay
          url = Fclay.configuration.local_storage_production_assets_host
        end
        url += "#{Fclay.configuration.local_url}/#{self.class.name.tableize}"
-       url += "/#{style.to_s}" if style && style != :nil 
+       url += "/#{style.to_s}" if style
        url += "/#{file_name}"
        url
     end
@@ -204,7 +204,7 @@ module Fclay
       end
     end
     
-    def set_file_size style=:nil
+    def set_file_size style=nil
       self.file_size = File.size local_file_path(style)
     end
     
