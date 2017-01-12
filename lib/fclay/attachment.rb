@@ -37,7 +37,7 @@ module Fclay
     end
     
     def upload_later
-      Fclay::UploadJob.perform_later self.class.name,self.id
+      Fclay::UploadJob.perform_later self.class.name,self.id if self.file_status == 'in_local_storage'
     end
     
     def upload
@@ -85,8 +85,9 @@ module Fclay
     end
 
     def file_url(style=nil)
-
       case file_status
+        when "external_link"
+          self.file_name
         when "in_local_storage"
           local_file_url(style)
         when "in_remote_storage"
@@ -155,16 +156,23 @@ module Fclay
 #         self.file_status = 'new'
 #       end
 
-      create_dirs
-      fetch_file_name unless self.file_name.present?
+  
+      path = @file.try(:path) || @file[:path]
+      return unless path
+      if path[0..3] == "http"
+        self.file_status = 'external_link'
+        self.file_name = path
+      else                
+        create_dirs
+        fetch_file_name unless self.file_name.present?
 
-      FileUtils.mv(@file.try(:path) || @file[:path],local_file_path)
-      `chmod 0755 #{local_file_path}`
+        FileUtils.mv(path,local_file_path)
+        `chmod 0755 #{local_file_path}`
 
-      delete_tmp_file
-      set_file_size
-      self.file_status = 'in_local_storage'
- 
+        delete_tmp_file
+        set_file_size
+        self.file_status = 'in_local_storage'
+      end
     end
     
     def fetch_file_name
