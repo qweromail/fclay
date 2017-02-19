@@ -2,10 +2,12 @@ require 'rails/generators/active_record'
 
 class Fclay::ConfigGenerator < ActiveRecord::Generators::Base
  
-  desc "This generator creates an initializer file at config/initializers"
+  def self.source_root
+    @source_root ||= File.expand_path('../templates', __FILE__)
+  end
 
   def create_initializer_file
-    create_file "config/initializers/fclay.rb", File.read "templates/fclay.rb"
+    create_file "config/initializers/fclay.rb", File.read("templates/fclay.rb")
   end
   
   
