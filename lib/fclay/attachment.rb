@@ -28,9 +28,9 @@ module Fclay
     def delete_files
       
       case file_status 
-        when 'in_remote_storage'
+        when 's3'
           delete_remote_files
-        when 'in_local_storage'
+        when 'local'
           delete_local_files
       end
     
@@ -52,7 +52,7 @@ module Fclay
 
        type = type.constantize
        uploading_object = type.find(id)
-       return if uploading_object.file_status == "in_remote_storage"
+       return unless uploading_object.need_upload
        content_type  = uploading_object.try(:content_type)
        bucket = bucket_object
        
@@ -65,10 +65,9 @@ module Fclay
          })
        end
       
-       if uploading_object.update_attribute(:file_status, 'in_remote_storage')
-         uploading_object.delete_local_files
-       end
-       uploading_object.try(:uploaded)
+      uploading_object.update_attributes(:file_status => 'idle', :file_location => "s3")
+      uploading_object.delete_local_files
+      uploading_object.try(:uploaded)
 
     end
 
@@ -89,12 +88,12 @@ module Fclay
     end
 
     def file_url(style=nil)
-      case file_status
+      case file_location
         when "external_link"
           self.file_name
-        when "in_local_storage"
+        when "local"
           local_file_url(style)
-        when "in_remote_storage"
+        when "s3"
           remote_file_url(style)
         end
     end
@@ -157,7 +156,8 @@ module Fclay
       path = @file.try(:path) || @file[:path]
       return unless path
       if path[0..3] == "http"
-        self.file_status = 'external_link'
+        self.file_status = 'idle'
+        self.file_location = 'external_link'
         self.file_name = path
       else                
         create_dirs
@@ -168,7 +168,8 @@ module Fclay
 
         delete_tmp_file
         set_file_size
-        self.file_status = 'in_local_storage'
+        self.file_location = 'local'
+        self.file_status = need_upload ? "processing" : "idle"
       end
     end
     
