@@ -148,15 +148,6 @@ module Fclay
   
       return unless @file
 
-      # TODO: refactor this
-      # if self.file_status == 'in_remote_storage'
-#         self.class.name.constantize::STYLES.each do |style|
-#            S3.delay(:queue => "backend").delete_s3_file s3_file_path(style)
-#         end
-#         self.file_status = 'new'
-#       end
-
-  
       path = @file.try(:path) || @file[:path]
       return unless path
       if path[0..3] == "http"
