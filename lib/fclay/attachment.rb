@@ -27,7 +27,7 @@ module Fclay
     
     def delete_files
       
-      case file_status 
+      case file_location 
         when 's3'
           delete_remote_files
         when 'local'
@@ -81,12 +81,6 @@ module Fclay
 
     end
 
-    def file_url_style_sync 
-
-      file_url(:sync)
-
-    end
-
     def file_url(style=nil)
       case file_location
         when "external_link"
@@ -95,6 +89,8 @@ module Fclay
           local_file_url(style)
         when "s3"
           remote_file_url(style)
+        else 
+          ""
         end
     end
 
@@ -196,7 +192,8 @@ module Fclay
        rescue
           Rails.logger.info "Deleting Media #{id} sync file not found"
        end
-
+       true
+       
     end  
 
     def delete_remote_files
