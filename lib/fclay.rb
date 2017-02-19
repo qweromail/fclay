@@ -35,7 +35,7 @@ module Fclay
     
     def validate_s3
       
-      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?"  && !(defined? Aws)
+      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?" unless defined? Aws
       %w(AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION).each do |key|
         raise ArgumentError, "Missed ENV[\"#{key}\"]" unless ENV[key]
       end
