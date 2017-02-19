@@ -1,0 +1,13 @@
+class <%= migration_class_name %> < ActiveRecord::Migration
+  def change
+      
+    add_column :<%= table_name %>, :file_name, :string
+    add_column :<%= table_name %>, :file_size, :integer
+    add_column :<%= table_name %>, :file_status, :string, :default => "new"
+    add_column :<%= table_name %>, :file_location, :string
+    add_column :<%= table_name %>, :content_type, :string
+    
+  end
+
+  
+end
