@@ -13,6 +13,10 @@ module Fclay
       configuration
     end
   
+    def remote_storage
+      @_remote_storage ||= RemoteStorage.new configuration.remote_storages[configuration.storage_policy]
+    end
+  
     def configuration
       @_configuration ||= Configuration.new
     end

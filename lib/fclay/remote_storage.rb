@@ -1,18 +1,12 @@
 module Fclay
   module RemoteStorage
     
-    KINDS = [:s3, :yadisk]
-    
-    def initialize name
-      @name = name
-    end
-    
-    def self.fetch 
-      RemoteStorage.new Fclay.configuration.storage_policy
+    def initialize data
+      @data = data
     end
     
     def bucket_name
-      if @name == "s3"
+      if @data.kind == "s3"
         Fclay.configuration.remote_storages[@name][:bucket]
       else
         ""

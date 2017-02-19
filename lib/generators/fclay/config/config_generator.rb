@@ -9,7 +9,7 @@ class Fclay::ConfigGenerator < ActiveRecord::Generators::Base
   #config.storage_policy = :s3
   #config.storages do |storages|
   #  storages[:s3] = {
-  #    :kind => 'aws',
+  #    :kind => 's3',
   #    :bucket => 'bucket-name'
   #  }
   #end
