@@ -28,7 +28,7 @@ module Fclay
     def validate_remote_storages
       raise ArgumentError, "remote storage '#{configuration.storage_policy}' not set" unless configuration.remote_storages[configuration.storage_policy].present?
       
-      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?" if configuration.remote_storages[configuration.storage_policy][:kind] == :s3 && !(defined? Aws)
+      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?" if configuration.remote_storages[configuration.storage_policy][:kind] == "s3" && !(defined? Aws)
           
     end
     
