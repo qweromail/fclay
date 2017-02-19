@@ -7,19 +7,9 @@ class Fclay::ConfigGenerator < ActiveRecord::Generators::Base
     @source_root ||= File.expand_path('../templates', __FILE__)
   end
 
-  def generate_migration
-    migration_template "fclay_migration.rb.erb", "db/migrate/#{migration_file_name}"
+  initializer "begin.rb" do
+    "puts 'this is the beginning'"
   end
-
-  def migration_name
-    "add_fclay_fields_to_#{name.underscore.pluralize}"
-  end
-
-  def migration_file_name
-    "#{migration_name}.rb"
-  end
-
-  def migration_class_name
-    migration_name.camelize
-  end
+  
+  
 end
