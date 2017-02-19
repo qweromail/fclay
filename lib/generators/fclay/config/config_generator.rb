@@ -7,7 +7,11 @@ class Fclay::ConfigGenerator < ActiveRecord::Generators::Base
   end
 
   def create_initializer_file
-    create_file "config/initializers/fclay.rb", File.read("templates/fclay.rb")
+    create_file "config/initializers/fclay.rb" do 
+      
+      "BAR"
+      
+    end
   end
   
   
