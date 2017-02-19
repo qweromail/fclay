@@ -27,6 +27,11 @@ module Fclay
     
     def validate_remote_storages
       raise ArgumentError, "remote storage '#{configuration.storage_policy}' not set" unless configuration.remote_storages[configuration.storage_policy].present?
+      
+      if configuration.storage_policy == :s3
+        Aws::S3::Resource.new
+      end
+      
     end
     
     ActiveSupport.on_load(:active_record) do

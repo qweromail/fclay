@@ -9,7 +9,7 @@ module Fclay
       @data[:kind] == "s3"
     end
     
-    def self.bucket_object
+    def bucket_object
       return "" unless s3? 
       s3 = Aws::S3::Resource.new
       s3.bucket(bucket_name)

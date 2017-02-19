@@ -199,7 +199,7 @@ module Fclay
     def delete_remote_files
       
       (self.class.fclay_options[:styles] || [nil]).each do |style|
-        Fclay::Attachment.bucket_object.object(remote_file_path(style)).delete
+        Fclay.remote_storage.bucket_object.object(remote_file_path(style)).delete
       end
     end
     
