@@ -27,10 +27,22 @@ module Fclay
     
     def validate_remote_storages
       raise ArgumentError, "remote storage '#{configuration.storage_policy}' not set" unless configuration.remote_storages[configuration.storage_policy].present?
+        
+      validate_s3 if configuration.remote_storages[configuration.storage_policy][:kind] == "s3"
       
-      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?" if configuration.remote_storages[configuration.storage_policy][:kind] == "s3" && !(defined? Aws)
           
     end
+    
+    def validate_s3
+      
+      raise ArgumentError, "Aws constant not definded. Missed aws-sdk gem?"  && !(defined? Aws)
+      %w(AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION).each do |key|
+        raise ArgumentError, "Missed ENV[\"#{key}\"]" unless ENV[key]
+      end
+        
+      
+    end
+    
     
     ActiveSupport.on_load(:active_record) do
       extend Fclay::Includer
