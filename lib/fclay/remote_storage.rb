@@ -1,5 +1,5 @@
 module Fclay
-  module RemoteStorage
+  class RemoteStorage
     
     def initialize data
       @data = data
