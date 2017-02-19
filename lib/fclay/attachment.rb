@@ -159,7 +159,7 @@ module Fclay
         self.file_name = path
       else                
         create_dirs
-        fetch_file_name unless self.file_name.present?
+        fetch_file_name
 
         FileUtils.mv(path,local_file_path)
         `chmod 0755 #{local_file_path}`
