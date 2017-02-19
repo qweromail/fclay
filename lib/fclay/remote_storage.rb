@@ -1,9 +1,21 @@
 module Fclay
   module RemoteStorage
     
-    def self.bucket_name
-      return unless Fclay.configuration.remote_storages[Fclay.configuration.storage_mode]
-      Fclay.configuration.remote_storages[Fclay.configuration.storage_mode][:bucket]
+    KINDS = [:s3, :yadisk]
+    
+    def initialize name
+      @name = name
+    end
+    
+    def self.fetch 
+      RemoteStorage.new Fclay.configuration.storage_policy
+    end
+    
+    def bucket_name
+      if @name == "s3"
+        Fclay.configuration.remote_storages[@name][:bucket]
+      else
+        ""
     end
     
   end

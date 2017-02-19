@@ -37,7 +37,10 @@ module Fclay
     end
     
     def need_upload
-      false
+      if Fclay.configuration.storage_policy != "local" && 
+      
+      
+      return false
     end
     
     def upload_later
@@ -95,7 +98,7 @@ module Fclay
     end
 
     def remote_file_url(style=nil)
-      "http://#{Fclay::RemoteStorage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
+      "http://#{Fclay::RemoteStorage.fetch.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
     end
 
     def local_file_path(style=nil)
@@ -211,7 +214,7 @@ module Fclay
   
       return "" if file_name.nil? || type.nil?
   
-      path = "http://s3.amazonaws.com/#{Fclay::RemoteStorage.bucket_name}"
+      path = "http://s3.amazonaws.com/#{Fclay::RemoteStorage.fetch.bucket_name}"
       path += "/navigation_complex/#{navigation_complex_id}" if navigation_complex_id
       path += "/#{type}"
       path += "/#{style.to_s}" if style
@@ -221,7 +224,7 @@ module Fclay
 
     def self.bucket_object
       s3 = Aws::S3::Resource.new
-      s3.bucket(Fclay::RemoteStorage.bucket_name)
+      s3.bucket(Fclay::RemoteStorage.fetch.bucket_name)
     end
 
   end

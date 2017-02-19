@@ -49,11 +49,11 @@ Configuring with `config\initializers\fclay.rb`:
   require 'fclay'
   Fclay.configure do |config|
     config.local_storage_host = "http://mysite.com"
-    config.storage_mode = "s3"
+    config.storage_policy = "s3"
     config.remote_storages = {
       "s3" => {
         kind: 'aws',
-        bucket: "bucket_name",
+        storage_policy: "storage_policy_name",
       }
     }
   end

@@ -18,11 +18,11 @@ module Fclay
     end
       
     def validate_configuration
-      validate_remote_storages if @_configuration.storage_mode != "local"
+      validate_remote_storages if @_configuration.storage_policy != "local"
     end
     
     def validate_remote_storages
-      (@_configuration.storage_mode.split(",") - ["local"]).each do |f|
+      (@_configuration.storage_policy.split(",") - ["local"]).each do |f|
         raise ArgumentError, "remote storage '#{f}' not set" unless @_configuration.remote_storages[f].present?
       end
     end
