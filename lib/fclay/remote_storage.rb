@@ -4,7 +4,7 @@ module Fclay
     attr_reader :name
     
     def initialize name,data
-      @name = name
+      @name = name.to_s
       @data = data
     end
     
