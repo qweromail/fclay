@@ -1,6 +1,6 @@
 require 'rails/generators/active_record'
 
-class FclayGenerator < ActiveRecord::Generators::Base
+class Fclay2Generator < ActiveRecord::Generators::Base
  
 
   def self.source_root
