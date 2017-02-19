@@ -219,11 +219,6 @@ module Fclay
       path
     end 
 
-    def self.bucket_object
-      s3 = Aws::S3::Resource.new
-      s3.bucket(Fclay::RemoteStorage.fetch.bucket_name)
-    end
-
   end
 end
 
