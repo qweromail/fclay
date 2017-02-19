@@ -151,6 +151,7 @@ module Fclay
 
       path = @file.try(:path) || @file[:path]
       return unless path
+      
       if path[0..3] == "http"
         self.file_status = 'idle'
         self.file_location = 'external_link'

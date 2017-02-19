@@ -1,6 +1,6 @@
 require 'rails/generators/active_record'
 
-class Fclay::ConfigGenerator < ActiveRecord::Generators::Base
+class Fclay::ConfigGenerator < ActiveRecord::Generators::NamedBase
  
   def create_initializer_file
     create_file "config/initializers/fclay.rb" do 
