@@ -17,8 +17,8 @@ module Fclay
           callbacks -= fclay_options[:without]
       end 
       
-      before_create :process_file if callbacks.include? :process
-      after_create :upload_later if callbacks.include? :upload
+      before_save :process_file if callbacks.include? :process
+      after_save :upload_later if callbacks.include? :upload
       before_destroy :delete_files if callbacks.include? :delete
     
     end
