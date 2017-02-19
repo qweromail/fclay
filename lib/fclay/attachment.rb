@@ -37,7 +37,7 @@ module Fclay
     end
     
     def need_upload
-      Fclay.configuration.storage_policy != "local"
+      Fclay.configuration.storage_policy != :local && self.file_location == "local"
     end
     
     def upload_later
@@ -65,7 +65,7 @@ module Fclay
          })
        end
       
-      uploading_object.update_attributes(:file_status => 'idle', :file_location => "s3")
+      uploading_object.update_attributes(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
       uploading_object.delete_local_files
       uploading_object.try(:uploaded)
 
@@ -95,7 +95,7 @@ module Fclay
     end
 
     def remote_file_url(style=nil)
-      "http://#{Fclay::RemoteStorage.fetch.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
+      "http://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
     end
 
     def local_file_path(style=nil)
@@ -211,7 +211,7 @@ module Fclay
   
       return "" if file_name.nil? || type.nil?
   
-      path = "http://s3.amazonaws.com/#{Fclay::RemoteStorage.fetch.bucket_name}"
+      path = "http://s3.amazonaws.com/#{Fclay.remote_storage.bucket_name}"
       path += "/navigation_complex/#{navigation_complex_id}" if navigation_complex_id
       path += "/#{type}"
       path += "/#{style.to_s}" if style

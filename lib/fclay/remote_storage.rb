@@ -1,7 +1,10 @@
 module Fclay
   class RemoteStorage
     
-    def initialize data
+    attr_reader :name
+    
+    def initialize name,data
+      @name = name
       @data = data
     end
     
