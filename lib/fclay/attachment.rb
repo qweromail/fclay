@@ -36,8 +36,12 @@ module Fclay
     
     end
     
+    def need_upload
+      false
+    end
+    
     def upload_later
-      Fclay::UploadJob.perform_later self.class.name,self.id if self.file_status == 'in_local_storage'
+      Fclay::UploadJob.perform_later self.class.name,self.id if need_upload
     end
     
     def upload
