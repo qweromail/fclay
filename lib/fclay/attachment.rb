@@ -149,8 +149,10 @@ module Fclay
     end
 
     def process_file
-  
+        
       return unless @file
+
+      delete_files
 
       path = @file.try(:path) || @file[:path]
       return unless path
