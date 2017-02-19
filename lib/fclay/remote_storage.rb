@@ -16,6 +16,7 @@ module Fclay
         Fclay.configuration.remote_storages[@name][:bucket]
       else
         ""
+      end
     end
     
   end
