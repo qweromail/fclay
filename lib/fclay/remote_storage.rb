@@ -7,7 +7,7 @@ module Fclay
     
     def bucket_name
       if @data.kind == "s3"
-        Fclay.configuration.remote_storages[@name][:bucket]
+        @data[:bucket]
       else
         ""
       end
