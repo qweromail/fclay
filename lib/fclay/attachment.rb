@@ -173,13 +173,13 @@ module Fclay
     def fetch_file_name
       
       ext = self.class.fclay_options[:extension]
-      if !ext && @file.original_filename
+      if ext != false || (ext == nil && @file.original_filename)
         filename_part = @file.original_filename.split(".")
-        ext = "#{filename_part.last}" if filename_part.size > 1
+        ext = filename_part.last if filename_part.size > 1
       end
 
-      self.file_name = try(:generate_filename)
-      self.file_name = SecureRandom.hex unless file_name
+      self.file_name = try(:fclay_attachment_filename)
+      self.file_name = SecureRandom.hex unless self.file_name
       self.file_name += ".#{ext}" if ext
       
     end
