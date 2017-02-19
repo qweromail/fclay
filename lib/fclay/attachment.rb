@@ -54,7 +54,7 @@ module Fclay
        uploading_object = type.find(id)
        return unless uploading_object.need_upload
        content_type  = uploading_object.try(:content_type)
-       bucket = bucket_object
+       bucket = Fclay.remote_storage.bucket_object
        
        (uploading_object.class.fclay_options[:styles] || [nil]).each do |style|
          obj = bucket.object(uploading_object.remote_file_path(style))
