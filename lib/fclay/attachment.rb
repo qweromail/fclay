@@ -37,10 +37,7 @@ module Fclay
     end
     
     def need_upload
-      if Fclay.configuration.storage_policy != "local" && 
-      
-      
-      return false
+      Fclay.configuration.storage_policy != "local"
     end
     
     def upload_later
