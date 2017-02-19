@@ -6,7 +6,7 @@ module Fclay
     end
     
     def bucket_name
-      if @data.kind == "s3"
+      if @data[:kind] == "s3"
         @data[:bucket]
       else
         ""
