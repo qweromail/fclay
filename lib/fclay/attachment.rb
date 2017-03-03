@@ -111,7 +111,6 @@ module Fclay
       url += "#{Fclay.configuration.local_url}/#{self.class.name.tableize}"
       url += "/#{style.to_s}" if style
       url += "/#{file_name}"
-      url += "##{file_key}" if self.class.fclay_options[:encrypted]
       url
     end
 
@@ -163,22 +162,8 @@ module Fclay
         create_dirs
         fetch_file_name
 
-        
-        if self.class.fclay_options[:encoded] == "base64"
-          encoded_string = Base64.encode64(File.open(path, "rb").read)
-          File.open(path, "wb") do |file|
-            file.write(encoded_string)
-          end
-        end
           
-          
-        
-        if self.class.fclay_options[:encrypted]
-          self.file_key = SecureRandom.hex
-          `openssl aes-256-cbc -a -salt -in #{path} -out #{local_file_path} -k #{self.file_key}`
-        else
-          FileUtils.mv(path,local_file_path)
-        end  
+        FileUtils.mv(path,local_file_path)
         
         `chmod 0755 #{local_file_path}`
 
