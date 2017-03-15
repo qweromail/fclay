@@ -176,7 +176,7 @@ module Fclay
     def fetch_file_name
       
       ext = self.class.fclay_options[:extension]
-      if ext != false || (ext == nil && @file.original_filename)
+      if ext != false || (ext == nil && @file.try(:original_filename))
         filename_part = @file.original_filename.split(".")
         ext = filename_part.last if filename_part.size > 1
       end
