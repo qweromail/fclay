@@ -29,7 +29,7 @@ module Fclay
     
     def delete_files
       
-      case file_location 
+      case self.file_location 
         when 's3'
           delete_remote_files
         when 'local'
@@ -85,15 +85,13 @@ module Fclay
     end
 
     def file_url(style=nil)
-      case file_location
+      case self.file_location
         when "external_link"
           self.file_name
         when "local"
           local_file_url(style)
-        when "s3"
+        else
           remote_file_url(style)
-        else 
-          ""
         end
     end
 
