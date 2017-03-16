@@ -175,6 +175,7 @@ module Fclay
     
     def fetch_file_name
       
+      return if self.file_name.present?
       ext = self.class.fclay_options[:extension]
       if ext && ext != false && @file.try(:original_filename)
         filename_part = @file.original_filename.split(".")
