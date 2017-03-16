@@ -13,7 +13,7 @@ module Fclay
     end
     
     def bucket_object
-      return "" unless s3? 
+      return nil if !@data || !s3? 
       s3 = Aws::S3::Resource.new
       s3.bucket(bucket_name)
     end
