@@ -177,9 +177,9 @@ module Fclay
       
       return if self.file_name.present?
       ext = self.class.fclay_options[:extension]
-      if ext && ext != false && @file.try(:original_filename)
-        filename_part = @file.original_filename.split(".")
-        ext = filename_part.last if filename_part.size > 1
+      if !ext || (ext != false && @file.try(:original_filename))
+        filename_parts = @file.original_filename.split(".")
+        ext = filename_parts.try(:last)
       end
 
       self.file_name = try(:fclay_attachment_filename)
