@@ -176,16 +176,19 @@ module Fclay
     def fetch_file_name
       
       return if self.file_name.present?
-      ext = self.class.fclay_options[:extension]
-      if !ext || (ext != false && @file.try(:original_filename))
-        filename_parts = @file.original_filename.split(".")
-        ext = filename_parts.try(:last)
-      end
+      ext = fetch_extension
 
       self.file_name = try(:fclay_attachment_filename)
       self.file_name = SecureRandom.hex unless self.file_name
       self.file_name += ".#{ext}" if ext
       
+    end
+    
+    def fetch_extension
+      ext = self.class.fclay_options[:extension]
+      return nil if ext == false
+      return ext.to_s if ext 
+      @file.original_filename.split(".").try(:last) if @file.try(:original_filename)
     end
 
     def delete_local_files 
