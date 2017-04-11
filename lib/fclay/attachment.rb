@@ -161,8 +161,10 @@ module Fclay
         create_dirs
         fetch_file_name
 
-          
-        FileUtils.mv(path,local_file_path)
+        (self.class.fclay_options[:styles] || [nil]).each do |style|  
+          # FileUtils.mv(path,local_file_path)
+          FileUtils.cp(@file.path,local_file_path(style))
+        end
         
         `chmod 0755 #{local_file_path}`
 
