@@ -44,7 +44,7 @@ module Fclay
     
     def upload_later
       
-      self.try(:log,"upload_later called, need_upload: #{need_upload}")
+      self.try(:log,"upload_later() called, need_upload: #{need_upload}")
       if need_upload
         job = Fclay::UploadJob.perform_later(self.class.name,self.id) 
         self.try(:log,"sheduled! job id: #{job.provider_job_id}")
@@ -57,27 +57,30 @@ module Fclay
     end
     
     def self.upload type,id
-
-       type = type.safe_constantize
-       return unless type
-       uploading_object = type.find_by_id(id)
-       return if !uploading_object || !uploading_object.need_upload
-       content_type  = uploading_object.try(:content_type)
-       bucket = Fclay.remote_storage.bucket_object
-       
-       (uploading_object.class.fclay_options[:styles] || [nil]).each do |style|
-         obj = bucket.object(uploading_object.remote_file_path(style))
-         obj.put({
-           body: File.read(uploading_object.local_file_path(style)),
-           acl: "public-read",
-           content_type: uploading_object.class.fclay_options[:content_type]
-         })
-       end
+      self.try(:log,"upload('#{type}',#{id}) called")
+      type = type.safe_constantize
+      return unless type
+      uploading_object = type.find_by_id(id)
+      self.try(:log,"uploading_object: #{uploading_object}  uploading_object.need_upload: #{uploading_object.need_upload}")
+      return if !uploading_object || !uploading_object.need_upload
+      content_type  = uploading_object.try(:content_type)
+      bucket = Fclay.remote_storage.bucket_object
       
-      # uploading_object.update_attributes(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
+      self.try(:log,"Start uploading")
+      (uploading_object.class.fclay_options[:styles] || [nil]).each do |style|
+       obj = bucket.object(uploading_object.remote_file_path(style))
+       obj.put({
+         body: File.read(uploading_object.local_file_path(style)),
+         acl: "public-read",
+         content_type: uploading_object.class.fclay_options[:content_type]
+       })
+      end
+
       type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
+      self.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
       uploading_object.delete_local_files
       uploading_object.try(:uploaded)
+      
 
     end
 
