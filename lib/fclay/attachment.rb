@@ -43,9 +43,13 @@ module Fclay
     end
     
     def upload_later
-      self.try(:log,"upload_later handler")
-      try(:log,"upload_later handler")
-      Fclay::UploadJob.perform_later(self.class.name,self.id) if need_upload
+      
+      self.try(:log,"upload_later called, need_upload: #{need_upload}")
+      if need_upload
+        job = Fclay::UploadJob.perform_later(self.class.name,self.id) 
+        self.try(:log,"sheduled! job id: #{job.provider_job_id}")
+      end
+        
     end
     
     def upload
