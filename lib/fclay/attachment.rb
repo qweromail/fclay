@@ -57,16 +57,15 @@ module Fclay
     end
     
     def self.upload type,id
-      self.try(:log,"upload('#{type}',#{id}) called")
       type = type.safe_constantize
       return unless type
       uploading_object = type.find_by_id(id)
-      self.try(:log,"uploading_object: #{uploading_object}  uploading_object.need_upload: #{uploading_object.need_upload}")
+      uploading_object.try(:log,"uploading_object: #{uploading_object}  uploading_object.need_upload: #{uploading_object.need_upload}")
       return if !uploading_object || !uploading_object.need_upload
       content_type  = uploading_object.try(:content_type)
       bucket = Fclay.remote_storage.bucket_object
       
-      self.try(:log,"Start uploading")
+      uploading_object.try(:log,"Start uploading")
       (uploading_object.class.fclay_options[:styles] || [nil]).each do |style|
        obj = bucket.object(uploading_object.remote_file_path(style))
        obj.put({
@@ -77,7 +76,7 @@ module Fclay
       end
 
       type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
-      self.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
+      uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
       uploading_object.delete_local_files
       uploading_object.try(:uploaded)
       
