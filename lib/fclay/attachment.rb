@@ -74,7 +74,8 @@ module Fclay
          })
        end
       
-      uploading_object.update_attributes(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
+      # uploading_object.update_attributes(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
+      type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
       uploading_object.delete_local_files
       uploading_object.try(:uploaded)
 
