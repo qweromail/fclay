@@ -169,7 +169,7 @@ module Fclay
         `chmod 0755 #{local_file_path}`
 
         delete_tmp_file
-        set_file_size
+        set_file_size uploading_object.class.fclay_options[:styles].try(:first)
         self.file_location = 'local'
         self.file_status = need_upload ? "processing" : "idle"
       end
