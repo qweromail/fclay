@@ -54,7 +54,7 @@ module Fclay
 
        type = type.safe_constantize
        return unless type
-       uploading_object = type.find_by_id(id)
+       bucket_object = type.find_by_id(id)
        return if !uploading_object || !uploading_object.need_upload
        content_type  = uploading_object.try(:content_type)
        bucket = Fclay.remote_storage.bucket_object
@@ -169,7 +169,7 @@ module Fclay
         `chmod 0755 #{local_file_path}`
 
         delete_tmp_file
-        set_file_size uploading_object.class.fclay_options[:styles].try(:first)
+        set_file_size self.class.fclay_options[:styles].try(:first)
         self.file_location = 'local'
         self.file_status = need_upload ? "processing" : "idle"
       end
