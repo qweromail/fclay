@@ -162,11 +162,10 @@ module Fclay
         fetch_file_name
 
         (self.class.fclay_options[:styles] || [nil]).each do |style|  
-          # FileUtils.mv(path,local_file_path)
-          FileUtils.cp(@file.path,local_file_path(style))
+          FileUtils.cp(path,local_file_path(style))
+          `chmod 0755 #{local_file_path(style)}`
         end
         
-        `chmod 0755 #{local_file_path}`
 
         delete_tmp_file
         set_file_size self.class.fclay_options[:styles].try(:first)
