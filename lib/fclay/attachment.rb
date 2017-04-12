@@ -60,7 +60,7 @@ module Fclay
       type = type.safe_constantize
       return unless type
       uploading_object = type.find_by_id(id)
-      uploading_object.try(:log,"uploading_object: #{uploading_object}  uploading_object.need_upload: #{uploading_object.need_upload}")
+      uploading_object.try(:log,"Fclay::upload() called, uploading_object: #{uploading_object}, uploading_object.need_upload: #{uploading_object.try(:need_upload)}")
       return if !uploading_object || !uploading_object.need_upload
       content_type  = uploading_object.try(:content_type)
       bucket = Fclay.remote_storage.bucket_object
