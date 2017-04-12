@@ -71,7 +71,7 @@ module Fclay
        obj.put({
          body: File.read(uploading_object.local_file_path(style)),
          acl: "public-read",
-         content_type: uploading_object.class.fclay_options[:content_type]
+         content_type: content_type
        })
       end
 
