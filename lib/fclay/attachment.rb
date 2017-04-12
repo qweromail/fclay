@@ -164,7 +164,7 @@ module Fclay
       self.log("fetched path: #{path.try(:to_s)}") 
       return unless path
       
-      self.content_type = @file.try(:content_type) || @file.try(:[],:content_type)
+      self.content_type = @file.try(:content_type) || @file.try(:[],:content_type) if self.respond_to?(:'content_type=')
       
       if path[0..3] == "http"
         self.file_status = 'idle'
