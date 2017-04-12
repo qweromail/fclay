@@ -154,13 +154,17 @@ module Fclay
     end
 
     def process_file
-        
+      self.log("process_file called") 
+      self.log("@file: #{@file.try(:to_s)}")        
       return unless @file
-
+      
       delete_files
-
-      path = @file.try(:path) || @file[:path]
+      path = @file.try(:path) || @file.try(:[],:path)
+      
+      self.log("fetched path: #{path.try(:to_s)}") 
       return unless path
+      
+      self.content_type = @file.try(:content_type) || @file.try(:[],:content_type)
       
       if path[0..3] == "http"
         self.file_status = 'idle'
@@ -172,14 +176,14 @@ module Fclay
 
         (self.class.fclay_options[:styles] || [nil]).each do |style|  
           FileUtils.cp(path,local_file_path(style))
-          `chmod 0755 #{local_file_path(style)}`
+          `chmod 777 #{local_file_path(style)}`
         end
         
-
         delete_tmp_file
         set_file_size self.class.fclay_options[:styles].try(:first)
         self.file_location = 'local'
         self.file_status = need_upload ? "processing" : "idle"
+        self.log("file_processed,  file_status: #{self.file_status}") 
       end
     end
     
