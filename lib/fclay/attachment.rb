@@ -154,14 +154,14 @@ module Fclay
     end
 
     def process_file
-      self.log("process_file called") 
-      self.log("@file: #{@file.try(:to_s)}")        
+      self.try(:log,"process_file called") 
+      self.try(:log,"@file: #{@file.try(:to_s)}")        
       return unless @file
       
       delete_files
       path = @file.try(:path) || @file.try(:[],:path)
       
-      self.log("fetched path: #{path.try(:to_s)}") 
+      self.try(:log,"fetched path: #{path.try(:to_s)}") 
       return unless path
       
       self.content_type = @file.try(:content_type) || @file.try(:[],:content_type) if self.respond_to?(:'content_type=')
@@ -183,7 +183,7 @@ module Fclay
         set_file_size self.class.fclay_options[:styles].try(:first)
         self.file_location = 'local'
         self.file_status = need_upload ? "processing" : "idle"
-        self.log("file_processed,  file_status: #{self.file_status}") 
+        self.try(:log,"file_processed,  file_status: #{self.file_status}") 
       end
     end
     
