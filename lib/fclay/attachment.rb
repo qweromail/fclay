@@ -94,6 +94,7 @@ module Fclay
     end
 
     def file_url(style=nil)
+      return "" unless self.file_location
       case self.file_location
         when "external_link"
           self.file_name
