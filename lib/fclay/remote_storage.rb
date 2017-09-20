@@ -9,6 +9,7 @@ module Fclay
     end
     
     def s3?
+      return false unless @data
       @data[:kind] == "s3"
     end
     
