@@ -107,7 +107,7 @@ module Fclay
     
     def final_file_url(style=nil)
       return self.file_name if self.file_location == "external_link"
-      if need_upload
+      if Fclay.configuration.storage_policy != :local
         remote_file_url(style)
       else
         local_file_url(style)
