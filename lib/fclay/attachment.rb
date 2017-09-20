@@ -104,6 +104,15 @@ module Fclay
           remote_file_url(style)
         end
     end
+    
+    def final_file_url(style=nil)
+      return self.file_name if self.file_location == "external_link"
+      if need_upload
+        remote_file_url(style)
+      else
+        local_file_url(style)
+      end
+    end
 
     def remote_file_url(style=nil)
       "http://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
