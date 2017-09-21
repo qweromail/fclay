@@ -115,7 +115,7 @@ module Fclay
     end
 
     def remote_file_url(style=nil)
-      "http://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
+      "https://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com/#{remote_file_path(style)}"
     end
 
     def local_file_path(style=nil)
