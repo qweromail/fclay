@@ -20,7 +20,7 @@ module Fclay
       end 
       
       before_save :process_file if callbacks.include? :process
-      after_save :upload_later if callbacks.include? :upload
+      after_save :process_upload if callbacks.include? :upload
       before_destroy :delete_files if callbacks.include? :delete
     
     end
@@ -36,6 +36,15 @@ module Fclay
           delete_local_files
       end
     
+    end
+    
+    def process_upload
+      return unless need_upload
+      if fclay_options[:processing] == :foreground       
+        upload
+      else
+        upload_later
+      end
     end
     
     def need_upload
