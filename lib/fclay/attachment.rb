@@ -40,7 +40,7 @@ module Fclay
     
     def process_upload
       return unless need_upload
-      if fclay_options[:processing] == :foreground       
+      if self.class.fclay_options[:processing] == :foreground       
         upload
       else
         upload_later
