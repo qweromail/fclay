@@ -52,8 +52,8 @@ Configuring with `config\initializers\fclay.rb`:
     config.storage_policy = "s3"
     config.remote_storages = {
       "s3" => {
-        kind: 'aws',
-        storage_policy: "storage_policy_name",
+        kind: 's3',
+        bucket: "bucket_name",
       }
     }
   end
