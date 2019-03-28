@@ -38,6 +38,18 @@ module Fclay
 
     end
 
+    def manual_delete_files
+      delete_files
+
+      self.file_status = nil
+      self.file_location = nil
+      self.file_name = nil
+      self.original_file_name = nil
+      self.file_size = nil
+      self.content_type = nil
+      save
+    end
+
     def process_upload
       return unless need_upload
       if self.class.fclay_options[:processing] == :foreground
@@ -178,20 +190,6 @@ module Fclay
       return unless @file
 
       delete_files
-
-      @file.blank? ? process_file_to_nil : process_file_in_normal_mode
-    end
-
-    def process_file_to_nil
-      self.file_status = nil
-      self.file_location = nil
-      self.file_name = nil
-      self.original_file_name = nil
-      self.file_size = nil
-      self.content_type = nil
-    end
-
-    def process_file_in_normal_mode
       path = @file.try(:path) || @file.try(:[],:path)
 
       self.try(:log,"fetched path: #{path.try(:to_s)}")
