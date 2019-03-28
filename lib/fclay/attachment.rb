@@ -38,6 +38,18 @@ module Fclay
 
     end
 
+    def safe_delete_files
+      delete_files
+
+      self.file_status = nil
+      self.file_location = nil
+      self.file_name = nil
+      self.original_file_name = nil
+      self.file_size = nil
+      self.content_type = nil
+      save
+    end
+
     def process_upload
       return unless need_upload
       if self.class.fclay_options[:processing] == :foreground
