@@ -38,7 +38,7 @@ module Fclay
 
     end
 
-    def manual_delete_files
+    def safe_delete_files
       delete_files
 
       self.file_status = nil
