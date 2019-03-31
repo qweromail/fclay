@@ -24,5 +24,9 @@ module Fclay
       @data[:bucket]
     end
     
+    def host 
+      @data.try(:[],:host)
+    end
+    
   end
 end

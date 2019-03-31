@@ -1,3 +1,3 @@
 module Fclay
-  VERSION = "0.1.48"
+  VERSION = "1.49.0"
 end
