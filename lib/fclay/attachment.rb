@@ -28,14 +28,7 @@ module Fclay
     attr_accessor :file
 
     def delete_files
-
-      case self.file_location
-        when 's3'
-          delete_remote_files
-        when 'local'
-          delete_local_files
-      end
-
+      self.file_location == 'local' ? delete_local_files : delete_remote_files
     end
 
     def safe_delete_files
@@ -77,32 +70,50 @@ module Fclay
       Fclay::Attachment.upload self.class.name,self.id
     end
 
-    def self.upload type,id
+    def self.upload(type, id)
       type = type.safe_constantize
       return unless type
       uploading_object = type.find_by_id(id)
       uploading_object.try(:log,"Fclay::upload() called, uploading_object: #{uploading_object}, uploading_object.need_upload: #{uploading_object.try(:need_upload)}")
       return if !uploading_object || !uploading_object.need_upload
-      content_type  = uploading_object.try(:content_type)
-      bucket = Fclay.remote_storage.bucket_object
 
-      uploading_object.try(:log,"Start uploading")
-      (uploading_object.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
-       obj = bucket.object(uploading_object.remote_file_path(style))
-       obj.put({
-         body: File.read(uploading_object.local_file_path(style)),
-         acl: "public-read",
-         content_type: content_type
-       })
+      if type.fclay_options[:primary].present?
+        storage = Fclay::RemoteStorage::Factory.for(type.fclay_options[:primary], uploading_object)
+        storage.upload
+      else
+        # !!! by config.storage_policy
+        storage = Fclay::RemoteStorage::Factory.for(Fclay.configuration.storage_policy, uploading_object)
+        storage.upload
       end
 
-      type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
-      uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
-      uploading_object.delete_local_files
-      uploading_object.try(:uploaded)
-
-
     end
+
+    # def self.upload type,id
+    #   type = type.safe_constantize
+    #   return unless type
+    #   uploading_object = type.find_by_id(id)
+    #   uploading_object.try(:log,"Fclay::upload() called, uploading_object: #{uploading_object}, uploading_object.need_upload: #{uploading_object.try(:need_upload)}")
+    #   return if !uploading_object || !uploading_object.need_upload
+    #   content_type  = uploading_object.try(:content_type)
+    #   bucket = Fclay.remote_storage.bucket_object
+    #
+    #   uploading_object.try(:log,"Start uploading")
+    #   (uploading_object.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
+    #    obj = bucket.object(uploading_object.remote_file_path(style))
+    #    obj.put({
+    #      body: File.read(uploading_object.local_file_path(style)),
+    #      acl: "public-read",
+    #      content_type: content_type
+    #    })
+    #   end
+    #
+    #   type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
+    #   uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
+    #   uploading_object.delete_local_files
+    #   uploading_object.try(:uploaded)
+    #
+    #
+    # end
 
     def fclay_attachment_presence
      errors.add(:file, 'must be present') if id.blank? && !@file
@@ -179,7 +190,7 @@ module Fclay
 
     def create_dirs
 
-     (self.class.fclay_options[:styles] || [nil]).each do |style|
+     (self.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
        FileUtils.mkdir_p(local_file_dir(style))
      end
 
@@ -206,7 +217,7 @@ module Fclay
         create_dirs
         fetch_file_name
 
-        (self.class.fclay_options[:styles] || [nil]).each do |style|
+        (self.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
           FileUtils.cp(path,local_file_path(style))
           `chmod 777 #{local_file_path(style)}`
         end
@@ -240,7 +251,7 @@ module Fclay
     def delete_local_files
 
        begin
-          (self.class.fclay_options[:styles] || [nil]).each do |style|
+          (self.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
             FileUtils.rm(local_file_path(style),{:force => true})
           end
        rescue
@@ -252,9 +263,15 @@ module Fclay
 
     def delete_remote_files
 
-      (self.class.fclay_options[:styles] || [nil]).each do |style|
-        Fclay.remote_storage.bucket_object.object(remote_file_path(style)).delete
+      if self.class.fclay_options[:primary].present?
+        storage = Fclay::RemoteStorage::Factory.for(self.class.fclay_options[:primary], self)
+        storage.delete_files
+      else
+        # !!! by config.storage_policy
+        storage = Fclay::RemoteStorage::Factory.for(Fclay.configuration.storage_policy, self)
+        storage.delete_files
       end
+
     end
 
     def set_file_size style=nil
