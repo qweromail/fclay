@@ -1,6 +1,6 @@
-class Fclay::RemoteStorage::SSH
+require_relative './base'
 
-  attr_accessor :name, :uploading_object, :storage, :options
+class Fclay::RemoteStorage::SSH < Fclay::RemoteStorage::Base
 
   def initialize(uploading_object)
     @name = 'ssh'
@@ -9,7 +9,7 @@ class Fclay::RemoteStorage::SSH
     @options = @uploading_object.class.fclay_options
   end
 
-  def upload
+  def upload(options = {})
     (@options[:styles].try(:keys) || [nil]).each do |style|
       command = "ssh #{hosting} 'mkdir -p #{remote_dir(style)}'"
       system(command)
@@ -17,11 +17,7 @@ class Fclay::RemoteStorage::SSH
       system(command)
     end
 
-    uploading_object.update(file_status: 'idle', file_location: name)
-    uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{name}")
-    uploading_object.delete_local_files
-    uploading_object.try(:uploaded)
-
+    super unless options[:without_update]
   end
 
   def delete_files
@@ -31,12 +27,17 @@ class Fclay::RemoteStorage::SSH
     end
   end
 
+  def self.url
+    opts = Fclay.configuration.remote_storages['ssh']
+    "https://#{opts[:host]}"
+  end
+
   def hosting
     "#{storage[:user]}@#{storage[:host]}"
   end
 
   def hosting_path
-    "/home/#{storage[:user]}/#{storage[:bucket]}/"
+    "#{storage[:path]}/"
   end
 
   def local_file(style = nil)

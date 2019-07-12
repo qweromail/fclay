@@ -77,43 +77,9 @@ module Fclay
       uploading_object.try(:log,"Fclay::upload() called, uploading_object: #{uploading_object}, uploading_object.need_upload: #{uploading_object.try(:need_upload)}")
       return if !uploading_object || !uploading_object.need_upload
 
-      if type.fclay_options[:primary].present?
-        storage = Fclay::RemoteStorage::Factory.for(type.fclay_options[:primary], uploading_object)
-        storage.upload
-      else
-        # !!! by config.storage_policy
-        storage = Fclay::RemoteStorage::Factory.for(Fclay.configuration.storage_policy, uploading_object)
-        storage.upload
-      end
+      Fclay::RemoteStorage::Provider.upload(uploading_object)
 
     end
-
-    # def self.upload type,id
-    #   type = type.safe_constantize
-    #   return unless type
-    #   uploading_object = type.find_by_id(id)
-    #   uploading_object.try(:log,"Fclay::upload() called, uploading_object: #{uploading_object}, uploading_object.need_upload: #{uploading_object.try(:need_upload)}")
-    #   return if !uploading_object || !uploading_object.need_upload
-    #   content_type  = uploading_object.try(:content_type)
-    #   bucket = Fclay.remote_storage.bucket_object
-    #
-    #   uploading_object.try(:log,"Start uploading")
-    #   (uploading_object.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
-    #    obj = bucket.object(uploading_object.remote_file_path(style))
-    #    obj.put({
-    #      body: File.read(uploading_object.local_file_path(style)),
-    #      acl: "public-read",
-    #      content_type: content_type
-    #    })
-    #   end
-    #
-    #   type.where(:id => id).update_all(:file_status => 'idle', :file_location => Fclay.remote_storage.name)
-    #   uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{Fclay.remote_storage.name}")
-    #   uploading_object.delete_local_files
-    #   uploading_object.try(:uploaded)
-    #
-    #
-    # end
 
     def fclay_attachment_presence
      errors.add(:file, 'must be present') if id.blank? && !@file
@@ -126,15 +92,17 @@ module Fclay
     end
 
     def file_url(style=nil)
-      return "" unless self.file_location
+      return '' unless self.file_location
+
       case self.file_location
-        when "external_link"
-          self.file_name
-        when "local"
-          local_file_url(style)
-        else
-          remote_file_url(style)
-        end
+      when "external_link"
+        self.file_name
+      when "local"
+        local_file_url(style)
+      else
+        remote_file_url(style)
+      end
+
     end
 
     def final_file_url(style=nil)
@@ -147,8 +115,9 @@ module Fclay
     end
 
     def remote_file_url(style=nil)
-      host = Fclay.remote_storage.host || "https://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com"
-      "#{host}/#{remote_file_path(style)}"
+      # host = Fclay.remote_storage.host || "https://#{Fclay.remote_storage.bucket_name}.s3.amazonaws.com"
+      # "#{host}/#{remote_file_path(style)}"
+      Fclay::RemoteStorage::Provider.remote_file_url(self, style)
     end
 
     def local_file_path(style=nil)
@@ -175,7 +144,7 @@ module Fclay
      dir
     end
 
-    def remote_file_path(style=nil)
+    def remote_file_path(style = nil)
       path = ""
       path += "#{self.class.name.tableize}"
       path += "/#{style.to_s}" if style
@@ -262,23 +231,14 @@ module Fclay
     end
 
     def delete_remote_files
-
-      if self.class.fclay_options[:primary].present?
-        storage = Fclay::RemoteStorage::Factory.for(self.class.fclay_options[:primary], self)
-        storage.delete_files
-      else
-        # !!! by config.storage_policy
-        storage = Fclay::RemoteStorage::Factory.for(Fclay.configuration.storage_policy, self)
-        storage.delete_files
-      end
-
+      Fclay::RemoteStorage::Provider.delete_files(self)
     end
 
     def set_file_size style=nil
       self.file_size = File.size local_file_path(style)
     end
 
-    def self.resolve_file_url navigation_complex_id,type,file_name,style=nil
+    def self.resolve_file_url(navigation_complex_id, type, file_name, style = nil)
 
       return "" if file_name.nil? || type.nil?
 

@@ -1,6 +1,6 @@
-class Fclay::RemoteStorage::S3
+require_relative './base'
 
-  attr_accessor :name, :uploading_object, :storage, :options
+class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
 
   def initialize(uploading_object)
     @name = 's3'
@@ -10,10 +10,9 @@ class Fclay::RemoteStorage::S3
     @bucket = Aws::S3::Resource.new.bucket(bucket_name)
   end
 
-  def upload
-
+  def upload(options = {})
     (@options[:styles].try(:keys) || [nil]).each do |style|
-       obj = @bucket.object(uploading_object.remote_file_path(style))
+       obj = bucket_object(style)
        obj.put({
          body: File.read(uploading_object.local_file_path(style)),
          acl: "public-read",
@@ -21,11 +20,21 @@ class Fclay::RemoteStorage::S3
        })
     end
 
-    uploading_object.update(file_status: 'idle', file_location: name)
-    uploading_object.try(:log,"Sucessful uploaded! file_status: 'idle', file_location: #{name}")
-    uploading_object.delete_local_files
-    uploading_object.try(:uploaded)
+    super unless options[:without_update]
+  end
 
+  def delete_files
+    (@options[:styles].try(:keys) || [nil]).each do |style|
+      bucket_object(style).delete
+    end
+  end
+
+  def bucket_object(style = nil)
+    @bucket.object(uploading_object.remote_file_path(style))
+  end
+
+  def self.url
+    "https://#{Fclay.configuration.remote_storages['s3'][:bucket]}.s3.amazonaws.com"
   end
 
   def content_type
@@ -33,15 +42,7 @@ class Fclay::RemoteStorage::S3
   end
 
   def bucket_name
-    @options[:bucket]
-  end
-
-  def delete_files
-
-    (@options[:styles].try(:keys) || [nil]).each do |style|
-      @bucket.object(remote_file_path(style)).delete
-    end
-
+    Fclay.configuration.remote_storages['s3'][:bucket]
   end
 
 end

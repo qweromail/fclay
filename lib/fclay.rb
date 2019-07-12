@@ -4,7 +4,7 @@ require 'fclay/upload_job'
 require "fclay/attachment"
 require "fclay/includer"
 require "fclay/remote_storage"
-require 'fclay/remote_storage/factory'
+require 'fclay/remote_storage/provider'
 
 module Fclay
   class << self
