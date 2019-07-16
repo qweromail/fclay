@@ -4,7 +4,7 @@ require_relative './s3'
 class Fclay::RemoteStorage::Provider
 
   def self.get_provider_class(storage)
-    case storage
+    case storage[:kind]
     when 'ssh'
       Fclay::RemoteStorage::SSH
     when 's3'
@@ -14,9 +14,9 @@ class Fclay::RemoteStorage::Provider
     end
   end
 
-  def self.provider_for(storage, uploading_object)
-    klass = get_provider_class(storage)
-    klass.new(uploading_object)
+  def self.provider_for(storage_name, uploading_object)
+    klass = get_provider_class(storages_list[storage_name])
+    klass.new(storage_name, uploading_object)
   end
 
 
@@ -32,7 +32,7 @@ class Fclay::RemoteStorage::Provider
         storage.upload(without_update: true)
       end
     else
-      storage = provider_for(Fclay.configuration.storage_policy, uploading_object)
+      storage = provider_for(storage_policy, uploading_object)
       storage.upload
     end
 
@@ -51,14 +51,22 @@ class Fclay::RemoteStorage::Provider
         storage.delete_files
       end
     else
-      storage = provider_for(Fclay.configuration.storage_policy, model)
+      storage = provider_for(storage_policy, model)
       storage.delete_files
     end
   end
 
   def self.remote_file_url(obj, style = nil)
-    klass = get_provider_class(obj.file_location)
-    "#{klass.url}/#{obj.remote_file_path(style)}"
+    klass = get_provider_class(storages_list[obj.file_location])
+    "#{klass.url(obj.file_location)}/#{obj.remote_file_path(style)}"
+  end
+
+  def self.storages_list
+    Fclay.configuration.remote_storages
+  end
+
+  def self.storage_policy
+    Fclay.configuration.storage_policy
   end
 
 end

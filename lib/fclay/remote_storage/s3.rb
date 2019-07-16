@@ -2,11 +2,9 @@ require_relative './base'
 
 class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
 
-  def initialize(uploading_object)
-    @name = 's3'
-    @uploading_object = uploading_object
-    @storage = Fclay.configuration.remote_storages['s3']
-    @options = @uploading_object.class.fclay_options
+  def initialize(name, uploading_object)
+    super
+
     @bucket = Aws::S3::Resource.new.bucket(bucket_name)
   end
 
@@ -33,8 +31,9 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
     @bucket.object(uploading_object.remote_file_path(style))
   end
 
-  def self.url
-    "https://#{Fclay.configuration.remote_storages['s3'][:bucket]}.s3.amazonaws.com"
+  def self.url(name = nil)
+    return '' unless name
+    "https://#{Fclay.configuration.remote_storages[name][:bucket]}.s3.amazonaws.com"
   end
 
   def content_type
@@ -42,7 +41,7 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
   end
 
   def bucket_name
-    Fclay.configuration.remote_storages['s3'][:bucket]
+    Fclay.configuration.remote_storages[name][:bucket]
   end
 
 end
