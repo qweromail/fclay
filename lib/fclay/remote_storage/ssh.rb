@@ -2,11 +2,8 @@ require_relative './base'
 
 class Fclay::RemoteStorage::SSH < Fclay::RemoteStorage::Base
 
-  def initialize(uploading_object)
-    @name = 'ssh'
-    @uploading_object = uploading_object
-    @storage = Fclay.configuration.remote_storages['ssh']
-    @options = @uploading_object.class.fclay_options
+  def initialize(name, uploading_object)
+    super
   end
 
   def upload(options = {})
@@ -27,8 +24,9 @@ class Fclay::RemoteStorage::SSH < Fclay::RemoteStorage::Base
     end
   end
 
-  def self.url
-    opts = Fclay.configuration.remote_storages['ssh']
+  def self.url(name = nil)
+    return '' unless name
+    opts = Fclay.configuration.remote_storages[name]
     "https://#{opts[:host]}"
   end
 
