@@ -57,8 +57,14 @@ class Fclay::RemoteStorage::Provider
   end
 
   def self.remote_file_url(obj, style = nil)
-    klass = get_provider_class(storages_list[obj.file_location])
-    "#{klass.url(obj.file_location)}/#{obj.remote_file_path(style)}"
+    if obj.class.fclay_options[:primary].present?
+      s = obj.class.fclay_options[:primary]
+      klass = get_provider_class(storages_list[s])
+      "#{klass.url(s)}/#{obj.remote_file_path(style)}"
+    else
+      klass = get_provider_class(storages_list[storage_policy])
+      "#{klass.url(storage_policy)}/#{obj.remote_file_path(style)}"
+    end
   end
 
   def self.storages_list
