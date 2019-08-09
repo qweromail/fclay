@@ -10,7 +10,7 @@ class Fclay::RemoteStorage::Base
   end
 
   def upload(options = {})
-    uploading_object.update(file_status: 'idle', file_location: name)
+    uploading_object.update(file_status: 'idle', file_location: 'remote')
     uploading_object.try(:log, "Sucessful uploaded! file_status: 'idle', file_location: #{name}")
     uploading_object.try(:uploaded)
   end
