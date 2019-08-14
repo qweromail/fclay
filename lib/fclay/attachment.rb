@@ -28,6 +28,7 @@ module Fclay
     attr_accessor :file
 
     def delete_files
+      return unless self.file_location
       self.file_location == 'local' ? delete_local_files : delete_remote_files
     end
 
