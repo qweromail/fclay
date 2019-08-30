@@ -80,6 +80,8 @@ module Fclay
 
       Fclay::RemoteStorage::Provider.upload(uploading_object)
 
+      # class method callback
+      uploading_object.class.uploaded if uploading_object.class.respond_to?(:uploaded)
     end
 
     def fclay_attachment_presence
