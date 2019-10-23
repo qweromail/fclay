@@ -33,7 +33,12 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
 
   def self.url(name = nil)
     return '' unless name
-    "https://#{Fclay.configuration.remote_storages[name][:bucket]}.s3.amazonaws.com"
+    storage = Fclay.configuration.remote_storages[name]
+    if (storage[:cloudfront].present?)
+      "https://#{storage[:cloudfront]}.cloudfront.net"
+    else
+      "https://#{storage[:bucket]}.s3.amazonaws.com"
+    end
   end
 
   def content_type
