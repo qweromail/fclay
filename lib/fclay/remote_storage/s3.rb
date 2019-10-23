@@ -35,9 +35,9 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
     return '' unless name
     storage = Fclay.configuration.remote_storages[name]
     if (storage[:cloudfront].present?)
-      "https://#{Fclay.configuration.remote_storages[name][:cloudfront]}.cloudfront.net"
+      "https://#{storage[:cloudfront]}.cloudfront.net"
     else
-      "https://#{Fclay.configuration.remote_storages[name][:bucket]}.s3.amazonaws.com"
+      "https://#{storage[:bucket]}.s3.amazonaws.com"
     end
   end
 
