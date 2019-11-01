@@ -1,6 +1,7 @@
 require "fclay/version"
 require 'fclay/configuration'
 require 'fclay/upload_job'
+require 'fclay/delete_job'
 require "fclay/attachment"
 require "fclay/includer"
 require "fclay/remote_storage"
