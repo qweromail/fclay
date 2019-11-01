@@ -222,7 +222,7 @@ module Fclay
 
        begin
           (self.class.fclay_options[:styles].try(:keys) || [nil]).each do |style|
-            FileUtils.rm(local_file_path(style),{:force => true})
+            Fclay::DeleteJob.set(wait: 5.minutes).perform_later(local_file_path(style))
           end
        rescue
           Rails.logger.info "Deleting Media #{id} sync file not found"
