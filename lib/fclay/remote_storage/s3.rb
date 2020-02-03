@@ -18,7 +18,7 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
            content_type: content_type
          })
        rescue => e
-         puts e.message
+         Rails.logger.debug(e.message)
        end
     end
 
