@@ -17,7 +17,8 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
            acl: "public-read",
            content_type: content_type
          })
-       rescue
+       rescue => e
+         puts e.message
        end
     end
 
