@@ -10,12 +10,16 @@ class Fclay::RemoteStorage::S3 < Fclay::RemoteStorage::Base
 
   def upload(options = {})
     (@options[:styles].try(:keys) || [nil]).each do |style|
-       obj = bucket_object(style)
-       obj.put({
-         body: File.read(uploading_object.local_file_path(style)),
-         acl: "public-read",
-         content_type: content_type
-       })
+       begin
+         obj = bucket_object(style)
+         obj.put({
+           body: File.read(uploading_object.local_file_path(style)),
+           acl: "public-read",
+           content_type: content_type
+         })
+       rescue => e
+         Rails.logger.debug(e.message)
+       end
     end
 
     super unless options[:without_update]
